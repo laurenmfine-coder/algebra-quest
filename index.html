@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Algebra Quest</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #4a4a8a;
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
+
+    .tagline {
+      text-align: center;
+      color: #888;
+      margin-bottom: 20px;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .stat-box {
+      background: #f8f9ff;
+      padding: 16px 24px;
+      border-radius: 12px;
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: #888;
+      text-transform: uppercase;
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .topic-btn {
+      padding: 16px;
+      background: #f8f9ff;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+    }
+
+    .topic-btn:hover {
+      border-color: #667eea;
+      background: #f0f2ff;
+    }
+
+    .topic-btn.active {
+      border-color: #667eea;
+      background: #e8ebff;
+    }
+
+    .topic-icon {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+
+    .topic-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 0.9rem;
+    }
+
+    .topic-desc {
+      font-size: 0.75rem;
+      color: #888;
+      font-family: monospace;
+    }
+
+    .equation-box {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 2rem;
+      font-family: monospace;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
+
+    .work-area {
+      background: #f8f9ff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .work-title {
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 16px;
+    }
+
+    .step-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 2px solid #eee;
+    }
+
+    .step-row.correct {
+      border-color: #4ade80;
+      background: #f0fdf4;
+    }
+
+    .step-row.incorrect {
+      border-color: #f87171;
+      background: #fef2f2;
+    }
+
+    .step-row.current {
+      border-color: #667eea;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .step-row.correct .step-num {
+      background: #4ade80;
+    }
+
+    .step-row.incorrect .step-num {
+      background: #f87171;
+    }
+
+    .step-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      font-size: 1.1rem;
+      font-family: monospace;
+      background: transparent;
+      outline: none;
+    }
+
+    .step-content {
+      flex: 1;
+      font-family: monospace;
+      font-size: 1.1rem;
+    }
+
+    .step-feedback {
+      margin-left: 40px;
+      padding: 10px 14px;
+      background: white;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #555;
+      border-left: 3px solid #667eea;
+      margin-bottom: 8px;
+    }
+
+    .step-feedback.success {
+      border-left-color: #4ade80;
+      color: #166534;
+    }
+
+    .step-feedback.error {
+      border-left-color: #f87171;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #f0f2ff;
+      color: #667eea;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e4ff;
+    }
+
+    .btn-hint {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #4ade80, #22c55e);
+      color: white;
+    }
+
+    .ai-box {
+      background: linear-gradient(135deg, #fdf4ff, #f0f9ff);
+      border: 1px solid #e9d5ff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 20px;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .ai-avatar {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #a855f7, #667eea);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ai-name {
+      font-weight: 600;
+      color: #7c3aed;
+    }
+
+    .ai-message {
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .setup-box {
+      max-width: 450px;
+      margin: 60px auto;
+    }
+
+    .setup-box h2 {
+      text-align: center;
+      margin-bottom: 16px;
+      color: #4a4a8a;
+    }
+
+    .setup-box p {
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .api-input {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+
+    .api-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.hidden {
+      display: none;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      max-width: 360px;
+    }
+
+    .modal-emoji {
+      font-size: 4rem;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      color: #4a4a8a;
+      margin-bottom: 12px;
+    }
+
+    .modal-msg {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .xp-text {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 20px;
+    }
+
+    .reset-btn {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fca5a5;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .skills-card {
+      margin-top: 20px;
+    }
+
+    .skill-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .skill-row:last-child {
+      border-bottom: none;
+    }
+
+    .skill-icon-box {
+      width: 36px;
+      height: 36px;
+      background: #f0f2ff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .skill-info {
+      flex: 1;
+    }
+
+    .skill-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .skill-bar {
+      height: 6px;
+      background: #eee;
+      border-radius: 3px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+
+    .skill-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .skill-fill.mastering { background: #4ade80; }
+    .skill-fill.learning { background: #667eea; }
+    .skill-fill.struggling { background: #f59e0b; }
+    .skill-fill.new { background: #ccc; }
+
+    .skill-score {
+      font-size: 0.8rem;
+      font-family: monospace;
+      color: #888;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.8rem; }
+      .equation-box { font-size: 1.4rem; padding: 20px; }
+      .topic-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Setup Screen -->
+    <div id="setup-screen" class="card setup-box">
+      <div style="font-size: 3rem; text-align: center; margin-bottom: 16px;">🚀</div>
+      <h2>Welcome to Algebra Quest!</h2>
+      <p>Enter your Anthropic API key to enable AI-powered tutoring. Your key stays on your device.</p>
+      <input type="password" id="api-input" class="api-input" placeholder="sk-ant-api03-...">
+      <button class="btn btn-primary" style="width: 100%;" onclick="startApp()">Start Learning! 🎮</button>
+      <p style="font-size: 0.8rem; color: #888; margin-top: 12px;">Your key is only used to get feedback from Claude.</p>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" class="hidden">
+      <div class="card">
+        <h1>🧮 Algebra Quest</h1>
+        <p class="tagline">Master algebra one step at a time</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-value" id="stat-solved">0</div>
+          <div class="stat-label">Solved</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="stat-streak">🔥 0</div>
+          <div class="stat-label">Streak</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="stat-xp">0</div>
+          <div class="stat-label">XP</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="stat-level">⭐ 1</div>
+          <div class="stat-label">Level</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <strong>Choose a Topic:</strong>
+        <div class="topic-grid" id="topic-grid"></div>
+      </div>
+
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+          <span id="problem-type" style="color: #667eea; font-weight: 600;">One-Step Addition</span>
+          <span id="problem-num" style="color: #888;">Problem #1</span>
+        </div>
+        
+        <div class="equation-box" id="equation-box">x + 5 = 12</div>
+        
+        <div class="work-area">
+          <div class="work-title">✏️ Show Your Work</div>
+          <div id="steps-area"></div>
+        </div>
+
+        <div class="btn-row" id="btn-row">
+          <button class="btn btn-primary" onclick="checkStep()">✓ Check Step</button>
+          <button class="btn btn-hint" onclick="getHint()">💡 Hint</button>
+          <button class="btn btn-secondary" onclick="showAnswer()">👀 Show Step</button>
+        </div>
+
+        <div class="ai-box hidden" id="ai-box">
+          <div class="ai-header">
+            <div class="ai-avatar">🤖</div>
+            <span class="ai-name">Math Buddy</span>
+          </div>
+          <div class="ai-message" id="ai-msg"></div>
+        </div>
+      </div>
+
+      <div class="card skills-card">
+        <strong>📊 Your Skills</strong>
+        <div id="skills-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal-overlay hidden" id="modal" onclick="closeModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-emoji">🎉</div>
+      <div class="modal-title">Awesome!</div>
+      <div class="modal-msg">You solved it!</div>
+      <div class="xp-text" id="xp-text">+15 XP</div>
+      <button class="btn btn-success" onclick="nextProblem()">Next Problem →</button>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="resetAll()">Reset Progress</button>
+
+  <script>
+    // Topics
+    var TOPICS = {
+      'one-step-add': {
+        name: 'One-Step Addition', desc: 'x + a = b', icon: '➕',
+        gen: function(d) {
+          var b = Math.floor(Math.random() * (10 + d * 5)) + 5;
+          var ans = Math.floor(Math.random() * b) + 1;
+          var a = b - ans;
+          return {
+            eq: 'x + ' + a + ' = ' + b, ans: ans,
+            steps: [
+              { hint: 'Subtract ' + a + ' from both sides', result: 'x = ' + b + ' - ' + a },
+              { hint: 'Calculate', result: 'x = ' + ans }
+            ]
+          };
+        }
+      },
+      'one-step-sub': {
+        name: 'One-Step Subtraction', desc: 'x - a = b', icon: '➖',
+        gen: function(d) {
+          var ans = Math.floor(Math.random() * (10 + d * 5)) + 5;
+          var a = Math.floor(Math.random() * ans) + 1;
+          var b = ans - a;
+          return {
+            eq: 'x - ' + a + ' = ' + b, ans: ans,
+            steps: [
+              { hint: 'Add ' + a + ' to both sides', result: 'x = ' + b + ' + ' + a },
+              { hint: 'Calculate', result: 'x = ' + ans }
+            ]
+          };
+        }
+      },
+      'one-step-mult': {
+        name: 'One-Step Multiply', desc: 'a × x = b', icon: '✖️',
+        gen: function(d) {
+          var a = Math.floor(Math.random() * (3 + d)) + 2;
+          var ans = Math.floor(Math.random() * (8 + d * 2)) + 1;
+          var b = a * ans;
+          return {
+            eq: a + ' × x = ' + b, ans: ans,
+            steps: [
+              { hint: 'Divide both sides by ' + a, result: 'x = ' + b + ' ÷ ' + a },
+              { hint: 'Calculate', result: 'x = ' + ans }
+            ]
+          };
+        }
+      },
+      'two-step': {
+        name: 'Two-Step', desc: 'ax + b = c', icon: '🔢',
+        gen: function(d) {
+          var a = Math.floor(Math.random() * (2 + d)) + 2;
+          var ans = Math.floor(Math.random() * (6 + d * 2)) + 1;
+          var b = Math.floor(Math.random() * 10) + 1;
+          var c = a * ans + b;
+          return {
+            eq: a + ' × x + ' + b + ' = ' + c, ans: ans,
+            steps: [
+              { hint: 'Subtract ' + b + ' from both sides', result: a + ' × x = ' + (c - b) },
+              { hint: 'Divide by ' + a, result: 'x = ' + (c - b) + ' ÷ ' + a },
+              { hint: 'Calculate', result: 'x = ' + ans }
+            ]
+          };
+        }
+      },
+      'combining': {
+        name: 'Combining Terms', desc: 'ax + bx = c', icon: '🧩',
+        gen: function(d) {
+          var ans = Math.floor(Math.random() * (6 + d)) + 1;
+          var a = Math.floor(Math.random() * 3) + 1;
+          var b = Math.floor(Math.random() * 3) + 1;
+          var c = (a + b) * ans;
+          return {
+            eq: a + ' × x + ' + b + ' × x = ' + c, ans: ans,
+            steps: [
+              { hint: 'Combine ' + a + 'x and ' + b + 'x', result: (a + b) + ' × x = ' + c },
+              { hint: 'Divide by ' + (a + b), result: 'x = ' + c + ' ÷ ' + (a + b) },
+              { hint: 'Calculate', result: 'x = ' + ans }
+            ]
+          };
+        }
+      },
+      'distributive': {
+        name: 'Distributive', desc: 'a(x + b) = c', icon: '📦',
+        gen: function(d) {
+          var a = Math.floor(Math.random() * 3) + 2;
+          var ans = Math.floor(Math.random() * (5 + d)) + 1;
+          var b = Math.floor(Math.random() * 5) + 1;
+          var c = a * (ans + b);
+          return {
+            eq: a + ' × (x + ' + b + ') = ' + c, ans: ans,
+            steps: [
+              { hint: 'Distribute ' + a, result: a + ' × x + ' + (a * b) + ' = ' + c },
+              { hint: 'Subtract ' + (a * b), result: a + ' × x = ' + (c - a * b) },
+              { hint: 'Divide by ' + a, result: 'x = ' + ans }
+            ]
+          };
+        }
+      }
+    };
+
+    // State
+    var S = {
+      key: '',
+      topic: 'one-step-add',
+      problem: null,
+      steps: [],
+      stepIdx: 0,
+      loading: false,
+      progress: { solved: 0, streak: 0, best: 0, xp: 0, level: 1, topics: {} }
+    };
+
+    // Load from storage
+    function load() {
+      try {
+        var k = localStorage.getItem('aq_key');
+        var p = localStorage.getItem('aq_progress');
+        if (k) S.key = k;
+        if (p) S.progress = JSON.parse(p);
+      } catch(e) { console.log('Storage error', e); }
+    }
+
+    function save() {
+      try {
+        localStorage.setItem('aq_progress', JSON.stringify(S.progress));
+      } catch(e) { console.log('Save error', e); }
+    }
+
+    // Start app
+    function startApp() {
+      var inp = document.getElementById('api-input');
+      var k = inp.value.trim();
+      if (k.indexOf('sk-ant-') !== 0) {
+        alert('Please enter a valid API key (starts with sk-ant-)');
+        return;
+      }
+      S.key = k;
+      try { localStorage.setItem('aq_key', k); } catch(e) {}
+      document.getElementById('setup-screen').className = 'card setup-box hidden';
+      document.getElementById('main-app').className = '';
+      init();
+    }
+
+    function init() {
+      renderTopics();
+      renderSkills();
+      genProblem();
+      updateStats();
+    }
+
+    function renderTopics() {
+      var g = document.getElementById('topic-grid');
+      g.innerHTML = '';
+      for (var id in TOPICS) {
+        var t = TOPICS[id];
+        var btn = document.createElement('button');
+        btn.className = 'topic-btn' + (S.topic === id ? ' active' : '');
+        btn.setAttribute('data-id', id);
+        btn.onclick = function() { 
+          S.topic = this.getAttribute('data-id'); 
+          renderTopics(); 
+          genProblem(); 
+        };
+        btn.innerHTML = '<div class="topic-icon">' + t.icon + '</div><div class="topic-name">' + t.name + '</div><div class="topic-desc">' + t.desc + '</div>';
+        g.appendChild(btn);
+      }
+    }
+
+    function renderSkills() {
+      var a = document.getElementById('skills-area');
+      a.innerHTML = '';
+      for (var id in TOPICS) {
+        var t = TOPICS[id];
+        var st = S.progress.topics[id] || { c: 0, a: 0 };
+        var pct = st.a > 0 ? Math.round((st.c / st.a) * 100) : 0;
+        var lvl = 'new';
+        if (st.a > 0) {
+          if (pct >= 80 && st.c >= 5) lvl = 'mastering';
+          else if (pct >= 50) lvl = 'learning';
+          else lvl = 'struggling';
+        }
+        var row = document.createElement('div');
+        row.className = 'skill-row';
+        row.innerHTML = '<div class="skill-icon-box">' + t.icon + '</div><div class="skill-info"><div class="skill-name">' + t.name + '</div><div class="skill-bar"><div class="skill-fill ' + lvl + '" style="width:' + pct + '%"></div></div></div><div class="skill-score">' + st.c + '/' + st.a + '</div>';
+        a.appendChild(row);
+      }
+    }
+
+    function genProblem() {
+      var t = TOPICS[S.topic];
+      var st = S.progress.topics[S.topic] || { c: 0, a: 0 };
+      var diff = Math.min(5, Math.floor(st.c / 3));
+      S.problem = t.gen(diff);
+      S.steps = [];
+      S.stepIdx = 0;
+      document.getElementById('problem-type').innerText = t.name;
+      document.getElementById('problem-num').innerText = 'Problem #' + (S.progress.solved + 1);
+      document.getElementById('equation-box').innerText = S.problem.eq;
+      renderSteps();
+      hideAI();
+      updateBtns(false);
+    }
+
+    function renderSteps() {
+      var a = document.getElementById('steps-area');
+      a.innerHTML = '';
+      
+      for (var i = 0; i < S.steps.length; i++) {
+        var s = S.steps[i];
+        var row = document.createElement('div');
+        row.className = 'step-row ' + (s.ok ? 'correct' : 'incorrect');
+        row.innerHTML = '<div class="step-num">' + (i + 1) + '</div><div class="step-content">' + s.text + '</div><span>' + (s.ok ? '✓' : '✗') + '</span>';
+        a.appendChild(row);
+        if (s.fb) {
+          var fb = document.createElement('div');
+          fb.className = 'step-feedback ' + (s.ok ? 'success' : 'error');
+          fb.innerText = s.fb;
+          a.appendChild(fb);
+        }
+      }
+
+      if (S.problem && S.stepIdx < S.problem.steps.length) {
+        var row = document.createElement('div');
+        row.className = 'step-row current';
+        row.innerHTML = '<div class="step-num">' + (S.steps.length + 1) + '</div><input type="text" class="step-input" id="step-input" placeholder="Type your next step..."' + (S.loading ? ' disabled' : '') + '>';
+        a.appendChild(row);
+        
+        var inp = document.getElementById('step-input');
+        if (inp) {
+          inp.onkeydown = function(e) {
+            if (e.key === 'Enter') checkStep();
+          };
+          setTimeout(function() { inp.focus(); }, 50);
+        }
+      }
+    }
+
+    function updateBtns(done) {
+      var r = document.getElementById('btn-row');
+      if (done) {
+        r.innerHTML = '<button class="btn btn-success" onclick="nextProblem()">Next Problem →</button>';
+      } else {
+        r.innerHTML = '<button class="btn btn-primary" onclick="checkStep()"' + (S.loading ? ' disabled' : '') + '>' + (S.loading ? '🤔 Checking...' : '✓ Check Step') + '</button><button class="btn btn-hint" onclick="getHint()">💡 Hint</button><button class="btn btn-secondary" onclick="showAnswer()">👀 Show Step</button>';
+      }
+    }
+
+    function checkStep() {
+      var inp = document.getElementById('step-input');
+      if (!inp || !inp.value.trim() || !S.problem) return;
+      
+      var txt = inp.value.trim();
+      S.loading = true;
+      updateBtns(false);
+
+      var exp = S.problem.steps[S.stepIdx];
+      var norm = function(s) { return s.toLowerCase().replace(/\s+/g, '').replace(/×/g, '*').replace(/÷/g, '/'); };
+      var userN = norm(txt);
+      var expN = norm(exp.result);
+      var parts = expN.split('=');
+      var expAns = parts.length > 1 ? parts[1] : '';
+      
+      var ok = userN.indexOf(expAns.trim()) >= 0 || userN === expN || txt === exp.result;
+      var isFinal = txt === String(S.problem.ans) || userN === 'x=' + S.problem.ans;
+
+      var prev = [];
+      for (var i = 0; i < S.steps.length; i++) prev.push(S.steps[i].text);
+
+      getAI(isFinal || ok, txt, exp.result, prev, function(fb) {
+        if (isFinal && S.stepIdx < S.problem.steps.length - 1) {
+          for (var i = S.stepIdx; i < S.problem.steps.length; i++) {
+            S.steps.push({
+              text: i === S.problem.steps.length - 1 ? 'x = ' + S.problem.ans : S.problem.steps[i].result,
+              ok: true,
+              fb: i === S.stepIdx ? fb : ''
+            });
+          }
+          S.stepIdx = S.problem.steps.length;
+          showAI('🎉 You got the right answer! Great mental math!');
+          complete(true);
+        } else if (ok) {
+          S.steps.push({ text: txt, ok: true, fb: fb });
+          if (S.stepIdx >= S.problem.steps.length - 1) {
+            showAI(fb);
+            complete(true);
+          } else {
+            S.stepIdx++;
+            showAI(fb);
+          }
+        } else {
+          S.steps.push({ text: txt, ok: false, fb: fb });
+          showAI(fb);
+        }
+
+        S.loading = false;
+        renderSteps();
+        updateBtns(S.stepIdx >= S.problem.steps.length);
+      });
+    }
+
+    function getAI(ok, user, exp, prev, callback) {
+      var prompt = ok
+        ? 'A 9-year-old is solving: ' + S.problem.eq + '\nThey correctly wrote step ' + (S.stepIdx + 1) + ': "' + user + '"\nGive brief encouraging feedback (1-2 sentences). Be warm and specific. Simple language for a 9-year-old.'
+        : 'A 9-year-old is solving: ' + S.problem.eq + '\nPrevious steps: ' + (prev.length ? prev.join(' → ') : 'None') + '\nFor step ' + (S.stepIdx + 1) + ', they wrote: "' + user + '"\nCorrect step: "' + exp + '"\nGive helpful feedback (2-3 sentences): explain what went wrong gently, give a hint, use simple encouraging language. Don\'t give the answer.';
+      
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://api.anthropic.com/v1/messages', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('x-api-key', S.key);
+      xhr.setRequestHeader('anthropic-version', '2023-06-01');
+      xhr.setRequestHeader('anthropic-dangerous-direct-browser-access', 'true');
+      
+      xhr.onload = function() {
+        try {
+          var data = JSON.parse(xhr.responseText);
+          var text = data.content && data.content[0] ? data.content[0].text : (ok ? 'Great job!' : 'Try again!');
+          callback(text);
+        } catch(e) {
+          callback(ok ? 'Correct!' : 'Try again!');
+        }
+      };
+      
+      xhr.onerror = function() {
+        callback(ok ? 'Correct!' : 'Try again!');
+      };
+      
+      xhr.send(JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 150,
+        messages: [{ role: 'user', content: prompt }]
+      }));
+    }
+
+    function showAI(msg) {
+      document.getElementById('ai-box').className = 'ai-box';
+      document.getElementById('ai-msg').innerText = msg;
+    }
+
+    function hideAI() {
+      document.getElementById('ai-box').className = 'ai-box hidden';
+    }
+
+    function getHint() {
+      if (!S.problem) return;
+      showAI('💡 Hint: ' + S.problem.steps[S.stepIdx].hint);
+    }
+
+    function showAnswer() {
+      if (!S.problem) return;
+      var s = S.problem.steps[S.stepIdx];
+      showAI('The next step is: ' + s.result + '\n\n' + s.hint);
+    }
+
+    function complete(win) {
+      var xp = win ? 10 + S.stepIdx * 5 : 0;
+      var st = S.progress.topics[S.topic] || { c: 0, a: 0 };
+      S.progress.topics[S.topic] = { c: st.c + (win ? 1 : 0), a: st.a + 1 };
+      if (win) {
+        S.progress.solved++;
+        S.progress.streak++;
+        S.progress.best = Math.max(S.progress.best, S.progress.streak);
+      } else {
+        S.progress.streak = 0;
+      }
+      S.progress.xp += xp;
+      S.progress.level = Math.floor(S.progress.xp / 100) + 1;
+      save();
+      updateStats();
+      renderSkills();
+      if (win) {
+        document.getElementById('xp-text').innerText = '+' + xp + ' XP';
+        document.getElementById('modal').className = 'modal-overlay';
+      }
+    }
+
+    function updateStats() {
+      document.getElementById('stat-solved').innerText = S.progress.solved;
+      document.getElementById('stat-streak').innerText = '🔥 ' + S.progress.streak;
+      document.getElementById('stat-xp').innerText = S.progress.xp;
+      document.getElementById('stat-level').innerText = '⭐ ' + S.progress.level;
+    }
+
+    function closeModal() {
+      document.getElementById('modal').className = 'modal-overlay hidden';
+    }
+
+    function nextProblem() {
+      closeModal();
+      genProblem();
+    }
+
+    function resetAll() {
+      if (confirm('Reset all progress?')) {
+        try {
+          localStorage.removeItem('aq_key');
+          localStorage.removeItem('aq_progress');
+        } catch(e) {}
+        location.reload();
+      }
+    }
+
+    // Init
+    load();
+    if (S.key) {
+      document.getElementById('setup-screen').className = 'card setup-box hidden';
+      document.getElementById('main-app').className = '';
+      init();
+    }
+  </script>
+</body>
+</html>
